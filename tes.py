@@ -13,10 +13,8 @@ import cv2
 # Get a reference to webcam #0 (the default one)
 video_capture = cv2.VideoCapture(0)
 
-
-
 # Load a second sample picture and learn how to recognize it.
-biden_image = face_recognition.load_image_file("sanjay.jpg")
+biden_image = face_recognition.load_image_file("sakshat.jpg")
 biden_face_encoding = face_recognition.face_encodings(biden_image)[0]
 
 # Load a sample picture and learn how to recognize it.
@@ -29,15 +27,16 @@ known_face_encodings = [
     obama_face_encoding
 ]
 known_face_names = [
-    "Sanjay",
+    "Ajay Sehgal",
     "Gourav Sardana"
-    
+
 ]
 
 # Initialize some variables
 face_locations = []
 face_encodings = []
 face_names = []
+f=[]
 process_this_frame = True
 
 while True:
@@ -68,10 +67,10 @@ while True:
                 name = known_face_names[first_match_index]
 
             face_names.append(name)
-    
+            f.append(name)
+
 
     process_this_frame = not process_this_frame
-
 
     # Display the results
     for (top, right, bottom, left), name in zip(face_locations, face_names):
@@ -88,15 +87,23 @@ while True:
         cv2.rectangle(frame, (left, bottom - 35), (right, bottom), (0, 0, 255), cv2.FILLED)
         font = cv2.FONT_HERSHEY_DUPLEX
         cv2.putText(frame, name, (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)
+    if f == 'Gourav Sardana':
+        video_capture.release()
+        cv2.destroyAllWindows()
+        break
+    else:
+        video_capture.release()
+        cv2.destroyAllWindows()
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
 
-    # Display the resulting image
+#     Display the resulting image
     cv2.imshow('Video', frame)
-    print(cv2.FILLED)
 
     # Hit 'q' on the keyboard to quit!
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
-print(name)
+
 # Release handle to the webcam
 video_capture.release()
 cv2.destroyAllWindows()

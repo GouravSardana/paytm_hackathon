@@ -1,10 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+    {% load staticfiles %}
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Medical Firm</title>
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <!--Google Fonts-->
+    <link href="https://fonts.googleapis.com/css?family=Anton|Cabin" rel="stylesheet">
+    <!--CSS-->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 </head>
 <body>
+<header>
+    <nav class="nav nav-wrapper transparent">
+        <div class="container">
+            <a href="/" class="brand-logo black-text">Medical Firm</a>
+            <ul class="right">
+                <li><a class="black-text" href="#">Features</a></li>
+                <li><a class="black-text" href="#">Tests</a></li>
+                <li><a class="black-text" href="#">Genetics</a></li>
+                <li><a class="black-text" href="/medical_library">Medical Library</a></li>
+                <li><a href="/login" class="btn red darken-4">LOG IN</a></li>
+                <li><a href="/signup" class="btn red darken-4">GET STARTED</a></li>
+            </ul>
+        </div>
+    </nav>
+</header>
 
+<body>
+    {%block body%}
+
+    {%endblock%}
+    <footer id="footer" class="page-footer grey darken-4">
+        <section class="section container">
+            <div class="row">
+                <div class="col m10 s12">
+                    <h3 class="white-text">Stay Healthy. Stay Fit. In Doubt Reach Us :</h3>
+
+                    <p><b>Phone No : </b> 0861- 2310792</p>
+                    <p><b>Location : </b> S.S Diagnostics, <br> Railway Line Street, <br> Near Vijayamahal Gate, <br>
+                        Nellore - 524001.</p>
+                </div>
+            </div>
+        </section>
+        <div class="footer-copyright">
+            <div class="container center">
+                &copy; 2018 The Medical Firm
+            </div>
+        </div>
+    </footer>
+    <!---->
 </body>
+
 </html>
