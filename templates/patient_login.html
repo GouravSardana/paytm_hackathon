@@ -11,9 +11,9 @@
         <div class="col m6 s12">
             <div class="card">
                 <div class="card-content">
-                    <form action="{% url 'user_login' %}", method="post">
+                    <form action="{% url 'patient_login' %}", method="post">
                         {% csrf_token %}
-                        <h3 class="blue-text text-darken-4" id="login_h3">Log In</h3>
+                        <h3 id="login_h3">Log In</h3>
                         <div class="row">
                         <div class="group">
                             <label for="email"><b class="blue-text text-darken-4">Email</b></label>
@@ -26,7 +26,7 @@
                                 <input required type="password" name="password" placeholder="Enter Your Password" >
                             </div>
                         </div>
-                        <input type="submit" class="blue-text text-darken-4" value="Login">
+                        <input type="submit" class="btn  blue darken-4" value="Login">
                     </form>
                 </div>
             </div>

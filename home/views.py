@@ -1,7 +1,7 @@
 
 import face_recognition
 import cv2
-
+from twilio.rest import Client
 from django.contrib.auth.models import User
 from django.urls import reverse
 
@@ -16,12 +16,26 @@ from django.contrib.auth import login,logout,authenticate
 from django.contrib.auth.decorators import login_required
 from django.views.generic.list import ListView
 
+from home.models import Patient_Detail, Doctor_Profile
+
 
 class Home(TemplateView):
     template_name = 'home.html'
+    # model=Doctor_Profile
+    # def post(self, request, *args, **kwargs):
+    #     c = self.request.POST.get('form-name')
+    #     l = Doctor_Profile.objects.filter(category=c)
+    #     print(l)
+    # def get(self, request, *args, **kwargs):
+    #     patient = Patient_Detail.objects.filter(pk=2)
+    #     return render(request, 'activity.html', {'p': patient})
+
 
 class SignUp(TemplateView):
     template_name = 'signup.html'
+    # model=Doctor_Profile
+    # l=Doctor_Profile.objects.filter(city='New Delhi')
+    # print(l)
     def post(self, request, *args, **kwargs):
         if request.method == 'POST':
             first_name = self.request.POST.get('first_name')
@@ -65,8 +79,8 @@ def user_login(request):
             obama_face_encoding
         ]
         known_face_names = [
-            "Sanjay Gupta",
-            "Gourav Sardana"
+            "Sakshat",
+            "Gourav"
 
         ]
 
@@ -151,7 +165,7 @@ def user_login(request):
                     # Release handle to the webcam
                     video_capture.release()
                     cv2.destroyAllWindows()
-                    return HttpResponse('Hey Doctor')
+                    return HttpResponseRedirect(reverse('doctor'))
                 elif user.groups.filter(name='LabUser'):
                     return HttpResponseRedirect(reverse('patient_details'))
                 else:
@@ -175,6 +189,43 @@ def user_logout(request):
     # Return to homepage.
     return HttpResponseRedirect(reverse('home'))
 
+class Patient_login(TemplateView):
+    template_name = 'patient_login.html'
+
+
+def patient_login(request):
+
+    if request.method == 'POST':
+        # First get the username and password supplied
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+
+
+        # Django's built-in authentication function:
+        user = authenticate(username=username, password=password)
+
+        # If we have a user
+        if user:
+            #Check it the account is active
+            if user.is_active:
+                # Log the user in.
+                login(request, user)
+
+                if user.groups.filter(name='Doctor'):
+                    return HttpResponseRedirect(reverse('doctor'))
+                else:
+                    return HttpResponseRedirect(reverse('activity'))
+            else:
+                # If account is not active:
+                return HttpResponse("Your account is not active.")
+        else:
+            print("Someone tried to login and failed.")
+            print("They used username: {} and password: {}".format(username,password))
+            return HttpResponse("Invalid login details supplied.")
+
+    else:
+        #Nothing has been provided for username or password.
+        return render(request, 'patient_login.html', {})
 # @method_decorator(login_required, name='dispatch')
 # class Patient_details(ListView):
 #     model=Patient_Detail
@@ -184,39 +235,53 @@ def user_logout(request):
 #     # def get_queryset(self):
 #     #     return User.objects.filter(groups__name='Doctor')
 #
-#     def get(self, request, *args, **kwargs):
-#         features = User.objects.filter(groups__name='Doctor')
-#         patient = Patient_Detail.objects.all()
-#         hospital=Hospital.objects.all()
-#         return render(request, 'patient-details.html', {'f': features, 'p': patient, 'hospital':hospital})
+    # def get(self, request, *args, **kwargs):
+    #     features = User.objects.filter(groups__name='Doctor')
+    #     patient = Patient_Detail.objects.all()
+    #     hospital=Hospital.objects.all()
+    #     return render(request, 'patient-details.html', {'f': features, 'p': patient, 'hospital':hospital})
 #
-#
-#     def post(self, request, *args, **kwargs):
-#         if request.method == 'POST':
-#             user=request.user
-#             name = self.request.POST.get('name')
-#             IP = self.request.POST.get('IP')
-#             user_email=self.request.POST.get('user_email')
-#             gender = self.request.POST.get('gender')
-#             doctor = self.request.POST.get('doctor')
-#             hospital_value= self.request.POST.get('hospital_value')
-#             total= self.request.POST.get('total')
-#             form = Patient_Detail(user=user, user_email=user_email, name=name, IP=IP, gender=gender, doctor=doctor, hospital_value = hospital_value, total=total)
-#             print(form)
-#             form.save()
-#             return HttpResponseRedirect(reverse('patient_details'))
-#
-#
-# class Medical_lib(ListView):
-#     template_name = 'diseases.html'
-#     model = Medical_Library
-#
-#     def get(self, request, *args, **kwargs):
-#         library = Medical_Library.objects.all()
-#         print(library)
-#         return render(request, 'diseases.html', {'library': library})
-#
-#
-# @method_decorator(login_required, name='dispatch')
-# class View_Patient(TemplateView):
-#     template_name = 'view_patient.html'
+@method_decorator(login_required, name='dispatch')
+class activity(TemplateView):
+    template_name = 'activity.html'
+    model = Patient_Detail
+
+    # b=Patient_Detail.objects.get(pk=2)
+    # print(b)
+    def get(self, request, *args, **kwargs):
+        patient = Patient_Detail.objects.filter(pk=2)
+        return render(request, 'activity.html', {'p': patient})
+
+
+class Profile(ListView):
+    template_name = 'profile.html'
+    model= Patient_Detail
+    # b=Patient_Detail.objects.get(pk=2)
+    # print(b)
+    def get(self, request, *args, **kwargs):
+        patient = Patient_Detail.objects.filter(pk=1)
+        return render(request, 'profile.html', {'p': patient})
+
+@method_decorator(login_required, name='dispatch')
+class Book(TemplateView):
+    template_name = 'booking.html'
+
+class BookNow(TemplateView):
+    template_name = 'book-now.html'
+
+def sms(request):
+    account_sid = 'AC07634ddbcae466ddfb640b8cc17a838a'
+    auth_token = '80eaa1a5f207e2a992911f744097833e'
+    client = Client(account_sid, auth_token)
+
+    message = client.messages.create(
+        body='Your Appointment is booked',
+        from_='whatsapp:+14155238886',
+        to='whatsapp:+917206755167'
+    )
+
+    return render(request, 'activity.html')
+
+class Doctor(TemplateView):
+    template_name = 'doctor-dashboard.html'
+
