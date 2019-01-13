@@ -270,8 +270,8 @@ class BookNow(TemplateView):
     template_name = 'book-now.html'
 
 def sms(request):
-    account_sid = 'AC07634ddbcae466ddfb640b8cc17a838a'
-    auth_token = '80eaa1a5f207e2a992911f744097833e'
+    account_sid = '#'
+    auth_token = '#'
     client = Client(account_sid, auth_token)
 
     message = client.messages.create(
